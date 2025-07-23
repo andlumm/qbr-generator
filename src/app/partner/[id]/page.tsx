@@ -18,6 +18,7 @@ export default function PartnerQBRPage() {
   const [partner, setPartner] = useState<Partner | null>(null)
   const [metrics, setMetrics] = useState<PartnerMetrics | null>(null)
   const [allPartnerMetrics, setAllPartnerMetrics] = useState<PartnerMetrics[]>([])
+  const [allPartners, setAllPartners] = useState<Partner[]>([])
   const [isGenerating, setIsGenerating] = useState(false)
   const [qbrContent, setQbrContent] = useState<string>('')
 
@@ -26,6 +27,7 @@ export default function PartnerQBRPage() {
     const partners = generateDummyPartners(8)
     const allMetrics = generateDummyMetrics(partners)
     setAllPartnerMetrics(allMetrics)
+    setAllPartners(partners)
     
     // Find specific partner
     const partnerData = partners.find(p => p.id === `partner-${params.id}`)
@@ -172,6 +174,7 @@ export default function PartnerQBRPage() {
           partner={partner} 
           metrics={metrics} 
           allPartnerMetrics={allPartnerMetrics}
+          allPartners={allPartners}
           isGenerating={isGenerating}
           qbrContent={qbrContent}
           onGenerateQBR={generateQBR}

@@ -16,8 +16,8 @@ export class OpenRouterClient {
     })
   }
 
-  async generateQBRInsights(partner: Partner, metrics: PartnerMetrics, allPartnerMetrics?: PartnerMetrics[]): Promise<string> {
-    const prompt = this.buildQBRPrompt(partner, metrics, allPartnerMetrics)
+  async generateQBRInsights(partner: Partner, metrics: PartnerMetrics, allPartnerMetrics?: PartnerMetrics[], allPartners?: Partner[]): Promise<string> {
+    const prompt = this.buildQBRPrompt(partner, metrics, allPartnerMetrics, allPartners)
     
     console.log('OpenRouter API Key present:', !!process.env.OPENROUTER_API_KEY)
     console.log('Making OpenRouter API call...')
@@ -73,31 +73,71 @@ export class OpenRouterClient {
     }
   }
 
-  private buildQBRPrompt(partner: Partner, metrics: PartnerMetrics, allPartnerMetrics?: PartnerMetrics[]): string {
-    // Calculate ecosystem averages if data provided
-    let ecosystemBenchmarks = ''
+  private buildQBRPrompt(partner: Partner, metrics: PartnerMetrics, allPartnerMetrics?: PartnerMetrics[], allPartners?: Partner[]): string {
+    // Calculate both tier-specific and ecosystem-wide benchmarks
+    let benchmarksSection = ''
     if (allPartnerMetrics && allPartnerMetrics.length > 0) {
-      const avgGrowth = allPartnerMetrics.reduce((sum, m) => sum + m.revenue.growth, 0) / allPartnerMetrics.length
-      const avgHealth = allPartnerMetrics.reduce((sum, m) => sum + m.healthScore, 0) / allPartnerMetrics.length
-      const avgConversion = allPartnerMetrics.reduce((sum, m) => sum + m.pipeline.conversion, 0) / allPartnerMetrics.length
-      const avgTraining = allPartnerMetrics.reduce((sum, m) => sum + m.engagement.trainingCompletionRate, 0) / allPartnerMetrics.length
-      const avgWinRate = allPartnerMetrics.reduce((sum, m) => sum + m.dealRegistration.winRate, 0) / allPartnerMetrics.length
-      const avgCSAT = allPartnerMetrics.reduce((sum, m) => sum + m.delivery.customerSatisfaction, 0) / allPartnerMetrics.length
+      // Filter for same tier partners using actual partner data
+      const tierPartners = allPartnerMetrics.filter(m => {
+        if (allPartners) {
+          // Use actual partner tier data
+          const partnerData = allPartners.find(p => p.id === m.partnerId)
+          return partnerData?.tier === partner.tier
+        } else {
+          // Fallback: estimate based on revenue ranges
+          const revenue = m.revenue.current
+          const partnerTier = revenue > 400000 ? 'Strategic' : revenue > 200000 ? 'Select' : 'Registered'
+          return partnerTier === partner.tier
+        }
+      }).filter(m => m.partnerId !== metrics.partnerId) // Exclude current partner
       
-      ecosystemBenchmarks = `
-**Ecosystem Benchmarks (${allPartnerMetrics.length} Partners):**
-- Average Revenue Growth: ${avgGrowth.toFixed(1)}% QoQ
-- Average Health Score: ${avgHealth.toFixed(1)}/100
-- Average Pipeline Conversion: ${avgConversion.toFixed(1)}%
-- Average Training Completion: ${avgTraining.toFixed(1)}%
-- Average Deal Win Rate: ${avgWinRate.toFixed(1)}%
-- Average CSAT: ${avgCSAT.toFixed(1)}/5
+      // Calculate ecosystem averages
+      const ecoAvgGrowth = allPartnerMetrics.reduce((sum, m) => sum + m.revenue.growth, 0) / allPartnerMetrics.length
+      const ecoAvgHealth = allPartnerMetrics.reduce((sum, m) => sum + m.healthScore, 0) / allPartnerMetrics.length
+      const ecoAvgConversion = allPartnerMetrics.reduce((sum, m) => sum + m.pipeline.conversion, 0) / allPartnerMetrics.length
+      const ecoAvgTraining = allPartnerMetrics.reduce((sum, m) => sum + m.engagement.trainingCompletionRate, 0) / allPartnerMetrics.length
+      const ecoAvgWinRate = allPartnerMetrics.reduce((sum, m) => sum + m.dealRegistration.winRate, 0) / allPartnerMetrics.length
+      const ecoAvgCSAT = allPartnerMetrics.reduce((sum, m) => sum + m.delivery.customerSatisfaction, 0) / allPartnerMetrics.length
+      
+      // Calculate tier-specific averages if we have enough data
+      let tierBenchmarks = ''
+      if (tierPartners.length >= 2) {
+        const tierAvgGrowth = tierPartners.reduce((sum, m) => sum + m.revenue.growth, 0) / tierPartners.length
+        const tierAvgHealth = tierPartners.reduce((sum, m) => sum + m.healthScore, 0) / tierPartners.length
+        const tierAvgConversion = tierPartners.reduce((sum, m) => sum + m.pipeline.conversion, 0) / tierPartners.length
+        const tierAvgTraining = tierPartners.reduce((sum, m) => sum + m.engagement.trainingCompletionRate, 0) / tierPartners.length
+        const tierAvgWinRate = tierPartners.reduce((sum, m) => sum + m.dealRegistration.winRate, 0) / tierPartners.length
+        const tierAvgCSAT = tierPartners.reduce((sum, m) => sum + m.delivery.customerSatisfaction, 0) / tierPartners.length
+        
+        tierBenchmarks = `
+**${partner.tier} Tier Benchmarks (${tierPartners.length} Partners):**
+- Tier Revenue Growth: ${tierAvgGrowth.toFixed(1)}% QoQ vs ${metrics.revenue.growth.toFixed(1)}% (${metrics.revenue.growth > tierAvgGrowth ? 'Above' : 'Below'} tier average)
+- Tier Health Score: ${tierAvgHealth.toFixed(1)}/100 vs ${metrics.healthScore}/100 (${metrics.healthScore > tierAvgHealth ? 'Above' : 'Below'} tier average)
+- Tier Pipeline Conversion: ${tierAvgConversion.toFixed(1)}% vs ${metrics.pipeline.conversion}% (${metrics.pipeline.conversion > tierAvgConversion ? 'Above' : 'Below'} tier average)
+- Tier Training Completion: ${tierAvgTraining.toFixed(1)}% vs ${metrics.engagement.trainingCompletionRate}% (${metrics.engagement.trainingCompletionRate > tierAvgTraining ? 'Above' : 'Below'} tier average)
+- Tier Deal Win Rate: ${tierAvgWinRate.toFixed(1)}% vs ${metrics.dealRegistration.winRate}% (${metrics.dealRegistration.winRate > tierAvgWinRate ? 'Above' : 'Below'} tier average)
+- Tier CSAT: ${tierAvgCSAT.toFixed(1)}/5 vs ${metrics.delivery.customerSatisfaction}/5 (${metrics.delivery.customerSatisfaction > tierAvgCSAT ? 'Above' : 'Below'} tier average)
 
-**Partner Percentile Rankings:**
-- Revenue Growth: ${this.calculatePercentile(metrics.revenue.growth, allPartnerMetrics.map(m => m.revenue.growth))}th percentile
-- Health Score: ${this.calculatePercentile(metrics.healthScore, allPartnerMetrics.map(m => m.healthScore))}th percentile
-- Pipeline Conversion: ${this.calculatePercentile(metrics.pipeline.conversion, allPartnerMetrics.map(m => m.pipeline.conversion))}th percentile
-- Training Completion: ${this.calculatePercentile(metrics.engagement.trainingCompletionRate, allPartnerMetrics.map(m => m.engagement.trainingCompletionRate))}th percentile
+**Tier Performance Ranking:**
+- Revenue Growth: ${this.calculatePercentile(metrics.revenue.growth, tierPartners.map(m => m.revenue.growth))}th percentile within ${partner.tier} tier
+- Health Score: ${this.calculatePercentile(metrics.healthScore, tierPartners.map(m => m.healthScore))}th percentile within ${partner.tier} tier
+- Pipeline Conversion: ${this.calculatePercentile(metrics.pipeline.conversion, tierPartners.map(m => m.pipeline.conversion))}th percentile within ${partner.tier} tier
+        `
+      }
+      
+      benchmarksSection = `
+**Ecosystem Benchmarks (${allPartnerMetrics.length} Total Partners):**
+- Ecosystem Revenue Growth: ${ecoAvgGrowth.toFixed(1)}% QoQ vs ${metrics.revenue.growth.toFixed(1)}% (${metrics.revenue.growth > ecoAvgGrowth ? 'Above' : 'Below'} ecosystem average)
+- Ecosystem Health Score: ${ecoAvgHealth.toFixed(1)}/100 vs ${metrics.healthScore}/100 (${metrics.healthScore > ecoAvgHealth ? 'Above' : 'Below'} ecosystem average)
+- Ecosystem Pipeline Conversion: ${ecoAvgConversion.toFixed(1)}% vs ${metrics.pipeline.conversion}% (${metrics.pipeline.conversion > ecoAvgConversion ? 'Above' : 'Below'} ecosystem average)
+- Ecosystem Training Completion: ${ecoAvgTraining.toFixed(1)}% vs ${metrics.engagement.trainingCompletionRate}% (${metrics.engagement.trainingCompletionRate > ecoAvgTraining ? 'Above' : 'Below'} ecosystem average)
+
+**Ecosystem Performance Ranking:**
+- Revenue Growth: ${this.calculatePercentile(metrics.revenue.growth, allPartnerMetrics.map(m => m.revenue.growth))}th percentile overall
+- Health Score: ${this.calculatePercentile(metrics.healthScore, allPartnerMetrics.map(m => m.healthScore))}th percentile overall
+- Pipeline Conversion: ${this.calculatePercentile(metrics.pipeline.conversion, allPartnerMetrics.map(m => m.pipeline.conversion))}th percentile overall
+
+${tierBenchmarks}
       `
     }
     return `
@@ -112,7 +152,7 @@ Analyze ${partner.name} and create AI INSIGHTS BLOCK only:
 - Training: ${metrics.engagement.trainingCompletionRate}% | CSAT: ${metrics.delivery.customerSatisfaction}/5
 - Deal Win Rate: ${metrics.dealRegistration.winRate}% | MDF Usage: ${metrics.engagement.marketingFundUtilization}%
 
-${ecosystemBenchmarks}
+${benchmarksSection}
 
 **Static Benchmarks:**
 - Pipeline Coverage Target: 150%  
@@ -212,7 +252,7 @@ ${recommendations.map(rec =>
 }
 
 // Helper function for API Route
-export async function generateQBRWithAI(partner: Partner, metrics: PartnerMetrics, allPartnerMetrics?: PartnerMetrics[]) {
+export async function generateQBRWithAI(partner: Partner, metrics: PartnerMetrics, allPartnerMetrics?: PartnerMetrics[], allPartners?: Partner[]) {
   const client = new OpenRouterClient()
-  return await client.generateQBRInsights(partner, metrics, allPartnerMetrics)
+  return await client.generateQBRInsights(partner, metrics, allPartnerMetrics, allPartners)
 }

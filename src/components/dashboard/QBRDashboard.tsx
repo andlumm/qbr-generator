@@ -21,12 +21,13 @@ interface QBRDashboardProps {
   partner: Partner
   metrics: PartnerMetrics
   allPartnerMetrics?: PartnerMetrics[]
+  allPartners?: Partner[]
   isGenerating?: boolean
   qbrContent?: string
   onGenerateQBR?: () => void
 }
 
-export const QBRDashboard = ({ partner, metrics, allPartnerMetrics, isGenerating, qbrContent, onGenerateQBR }: QBRDashboardProps) => {
+export const QBRDashboard = ({ partner, metrics, allPartnerMetrics, allPartners, isGenerating, qbrContent, onGenerateQBR }: QBRDashboardProps) => {
   const [selectedPeriod, setSelectedPeriod] = useState('quarter')
   const [aiInsights, setAiInsights] = useState<string>('')
   const [isLoadingInsights, setIsLoadingInsights] = useState(false)
@@ -45,7 +46,7 @@ export const QBRDashboard = ({ partner, metrics, allPartnerMetrics, isGenerating
       const response = await fetch('/api/generate-qbr', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ partner, metrics, allPartnerMetrics })
+        body: JSON.stringify({ partner, metrics, allPartnerMetrics, allPartners })
       })
       
       console.log('Response status:', response.status)

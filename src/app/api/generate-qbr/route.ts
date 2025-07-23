@@ -3,7 +3,7 @@ import { generateQBRWithAI } from '@/lib/openrouter-client'
 
 export async function POST(request: Request) {
   try {
-    const { partner, metrics, allPartnerMetrics } = await request.json()
+    const { partner, metrics, allPartnerMetrics, allPartners } = await request.json()
     
     console.log('=== QBR API Debug Info ===')
     console.log('API Key available:', !!process.env.OPENROUTER_API_KEY)
@@ -20,7 +20,7 @@ export async function POST(request: Request) {
     }
 
     // Generate QBR insights using Claude 3 Sonnet via OpenRouter
-    const aiInsights = await generateQBRWithAI(partner, metrics, allPartnerMetrics)
+    const aiInsights = await generateQBRWithAI(partner, metrics, allPartnerMetrics, allPartners)
     
     return NextResponse.json({ 
       success: true, 
