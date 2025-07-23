@@ -143,54 +143,83 @@ ${partner.name} (${partner.tier} Partner) shows ${metrics.revenue.growth > 0 ? '
     <div className="space-y-6">
       {/* Partnership Overview */}
       <Card className="mb-8">
-        <CardHeader>
-          <CardTitle className="text-2xl font-bold">{partner.name}</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-sm">
-            <div>
-              <div className="text-slate-600 font-medium">Partner Tier</div>
-              <div className="text-lg font-semibold">{partner.tier}</div>
+        <CardContent className="p-8">
+          {/* Partner Name as Main Header */}
+          <div className="text-center mb-8">
+            <h1 className="text-4xl font-bold text-slate-900 mb-2">{partner.name}</h1>
+            <div className="flex items-center justify-center gap-4">
+              <span className={`inline-flex px-3 py-1 text-sm font-medium rounded-full ${
+                partner.tier === 'Strategic' ? 'bg-purple-100 text-purple-700' :
+                partner.tier === 'Select' ? 'bg-blue-100 text-blue-700' :
+                'bg-gray-100 text-gray-700'
+              }`}>
+                {partner.tier} Partner
+              </span>
+              <span className="text-slate-600">•</span>
+              <span className="text-lg text-slate-700">{partner.region}</span>
+              <span className="text-slate-600">•</span>
+              <span className="text-lg font-medium text-slate-700">{metrics.quarter}</span>
             </div>
-            <div>
-              <div className="text-slate-600 font-medium">Region</div>
-              <div className="text-lg font-semibold">{partner.region}</div>
-            </div>
-            <div>
-              <div className="text-slate-600 font-medium">Health Score</div>
-              <div className="text-lg font-semibold" style={{ color: getHealthColor(metrics.healthScore) }}>
-                {metrics.healthScore}/100
+          </div>
+
+          {/* Key Metrics Grid */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+            <div className="text-center">
+              <div className="text-sm text-slate-500 uppercase tracking-wide font-medium mb-2">Health Score</div>
+              <div className="text-3xl font-bold mb-1" style={{ color: getHealthColor(metrics.healthScore) }}>
+                {metrics.healthScore}
               </div>
+              <div className="text-sm text-slate-500">Target: 85</div>
             </div>
-            <div>
-              <div className="text-slate-600 font-medium">Quarter</div>
-              <div className="text-lg font-semibold">{metrics.quarter}</div>
-            </div>
-            <div>
-              <div className="text-slate-600 font-medium">Current Revenue</div>
-              <div className="text-lg font-semibold">${(metrics.revenue.current / 1000).toFixed(0)}K</div>
-            </div>
-            <div>
-              <div className="text-slate-600 font-medium">Growth Rate</div>
-              <div className="flex items-center gap-2">
-                <div className="text-lg font-semibold" style={{ color: metrics.revenue.growth > 0 ? '#10b981' : '#ef4444' }}>
+            
+            <div className="text-center">
+              <div className="text-sm text-slate-500 uppercase tracking-wide font-medium mb-2">Current Revenue</div>
+              <div className="text-3xl font-bold text-slate-900 mb-1">
+                ${(metrics.revenue.current / 1000).toFixed(0)}K
+              </div>
+              <div className="flex items-center justify-center gap-1">
+                <span className="text-sm font-medium" style={{ color: metrics.revenue.growth > 0 ? '#10b981' : '#ef4444' }}>
                   {metrics.revenue.growth > 0 ? '+' : ''}{metrics.revenue.growth.toFixed(1)}% QoQ
-                </div>
-                <span className="text-lg">
+                </span>
+                <span className="text-sm">
                   {metrics.revenue.growth > 10 ? '↗️' : metrics.revenue.growth > 0 ? '➡️' : '↘️'}
                 </span>
               </div>
             </div>
-            <div>
-              <div className="text-slate-600 font-medium">Pipeline Value</div>
-              <div className="text-lg font-semibold">${(metrics.pipeline.value / 1000).toFixed(0)}K</div>
+            
+            <div className="text-center">
+              <div className="text-sm text-slate-500 uppercase tracking-wide font-medium mb-2">Pipeline</div>
+              <div className="text-3xl font-bold text-slate-900 mb-1">
+                ${(metrics.pipeline.value / 1000).toFixed(0)}K
+              </div>
+              <div className="text-sm text-slate-500">{metrics.pipeline.count} opportunities</div>
             </div>
-            <div>
-              <div className="text-slate-600 font-medium">Risk Level</div>
-              <div className="text-lg font-semibold" style={{ 
-                color: metrics.riskLevel === 'Low' ? '#10b981' : metrics.riskLevel === 'Medium' ? '#f59e0b' : '#ef4444' 
-              }}>
-                {metrics.riskLevel}
+            
+            <div className="text-center">
+              <div className="text-sm text-slate-500 uppercase tracking-wide font-medium mb-2">Risk Level</div>
+              <div className="flex items-center justify-center gap-2 mb-1">
+                {metrics.riskLevel === 'Low' && <CheckCircle className="w-6 h-6 text-green-500" />}
+                {metrics.riskLevel === 'Medium' && <AlertCircle className="w-6 h-6 text-yellow-500" />}
+                {metrics.riskLevel === 'High' && <AlertCircle className="w-6 h-6 text-red-500" />}
+                <span className="text-2xl font-bold" style={{ 
+                  color: metrics.riskLevel === 'Low' ? '#10b981' : metrics.riskLevel === 'Medium' ? '#f59e0b' : '#ef4444' 
+                }}>
+                  {metrics.riskLevel}
+                </span>
+              </div>
+            </div>
+          </div>
+
+          {/* Partner Managers */}
+          <div className="mt-8 pt-6 border-t border-slate-200">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-center">
+              <div>
+                <div className="text-sm text-slate-500 uppercase tracking-wide font-medium mb-1">Partner Manager</div>
+                <div className="text-lg font-semibold text-slate-900">{partner.partnerManager}</div>
+              </div>
+              <div>
+                <div className="text-sm text-slate-500 uppercase tracking-wide font-medium mb-1">Account Manager</div>
+                <div className="text-lg font-semibold text-slate-900">{partner.accountManager}</div>
               </div>
             </div>
           </div>
