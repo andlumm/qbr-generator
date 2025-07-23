@@ -31,6 +31,7 @@ export const QBRDashboard = ({ partner, metrics, allPartnerMetrics, allPartners,
   const [selectedPeriod, setSelectedPeriod] = useState('quarter')
   const [aiInsights, setAiInsights] = useState<string>('')
   const [isLoadingInsights, setIsLoadingInsights] = useState(false)
+  const [activeTab, setActiveTab] = useState<'executive' | 'analytics'>('executive')
 
   useEffect(() => {
     generateAIInsights()
@@ -143,7 +144,44 @@ ${partner.name} (${partner.tier} Partner) shows ${metrics.revenue.growth > 0 ? '
 
   return (
     <div className="space-y-6">
-      {/* Compact Partner Managers Section */}
+      {/* Tab Navigation */}
+      <Card>
+        <CardContent className="p-0">
+          <div className="flex border-b border-slate-200">
+            <button
+              onClick={() => setActiveTab('executive')}
+              className={`flex-1 px-6 py-4 text-center font-medium text-sm transition-colors ${
+                activeTab === 'executive'
+                  ? 'bg-blue-50 text-blue-700 border-b-2 border-blue-600'
+                  : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
+              }`}
+            >
+              <div className="flex items-center justify-center gap-2">
+                <Brain className="w-4 h-4" />
+                Executive QBR
+              </div>
+            </button>
+            <button
+              onClick={() => setActiveTab('analytics')}
+              className={`flex-1 px-6 py-4 text-center font-medium text-sm transition-colors ${
+                activeTab === 'analytics'
+                  ? 'bg-blue-50 text-blue-700 border-b-2 border-blue-600'
+                  : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
+              }`}
+            >
+              <div className="flex items-center justify-center gap-2">
+                <BarChart3 className="w-4 h-4" />
+                Data Analytics
+              </div>
+            </button>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Tab Content */}
+      {activeTab === 'executive' ? (
+        <div className="space-y-6">
+          {/* Compact Partner Managers Section */}
       <Card className="mb-6">
         <CardContent className="p-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -708,6 +746,267 @@ ${partner.name} (${partner.tier} Partner) shows ${metrics.revenue.growth > 0 ? '
       
       END OF COMMENTED INSIGHTS SECTION
       */}
+        </div>
+      ) : (
+        // Analytics Dashboard Tab
+        <div className="space-y-6">
+          {/* KPI Overview Cards */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <Card>
+              <CardHeader className="pb-2">
+                <CardTitle className="text-sm font-medium text-slate-600">Revenue Attainment</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">{metrics.revenue.attainment}%</div>
+                <div className="text-xs text-slate-500">Target: 100%</div>
+                <div className="mt-2 text-xs">
+                  <span className={metrics.revenue.growth > 0 ? 'text-green-600' : 'text-red-600'}>
+                    {metrics.revenue.growth > 0 ? '+' : ''}{metrics.revenue.growth}% QoQ
+                  </span>
+                </div>
+              </CardContent>
+            </Card>
+            
+            <Card>
+              <CardHeader className="pb-2">
+                <CardTitle className="text-sm font-medium text-slate-600">Pipeline Coverage</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">{metrics.pipeline.coverage}%</div>
+                <div className="text-xs text-slate-500">Target: 150%</div>
+                <div className="mt-2 text-xs text-slate-600">
+                  ${(metrics.pipeline.value / 1000).toFixed(0)}K pipeline
+                </div>
+              </CardContent>
+            </Card>
+            
+            <Card>
+              <CardHeader className="pb-2">
+                <CardTitle className="text-sm font-medium text-slate-600">MDF Utilization</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">{metrics.engagement.marketingFundUtilization}%</div>
+                <div className="text-xs text-slate-500">Target: 80%</div>
+                <div className="mt-2 text-xs text-slate-600">
+                  Marketing fund usage
+                </div>
+              </CardContent>
+            </Card>
+            
+            <Card>
+              <CardHeader className="pb-2">
+                <CardTitle className="text-sm font-medium text-slate-600">Training Completion</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">{metrics.engagement.trainingCompletionRate}%</div>
+                <div className="text-xs text-slate-500">Target: 90%</div>
+                <div className="mt-2 text-xs text-slate-600">
+                  {metrics.engagement.trainingsCompleted} completed
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Detailed Metrics Grid */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {/* Revenue & Pipeline Metrics */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <DollarSign className="w-5 h-5" />
+                  Revenue & Pipeline Analysis
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="p-3 bg-slate-50 rounded-lg">
+                      <div className="text-xs text-slate-500 uppercase tracking-wide">Current Revenue</div>
+                      <div className="text-lg font-semibold">${(metrics.revenue.current / 1000).toFixed(0)}K</div>
+                    </div>
+                    <div className="p-3 bg-slate-50 rounded-lg">
+                      <div className="text-xs text-slate-500 uppercase tracking-wide">YTD Revenue</div>
+                      <div className="text-lg font-semibold">${(metrics.revenue.ytd / 1000).toFixed(0)}K</div>
+                    </div>
+                    <div className="p-3 bg-slate-50 rounded-lg">
+                      <div className="text-xs text-slate-500 uppercase tracking-wide">Pipeline Value</div>
+                      <div className="text-lg font-semibold">${(metrics.pipeline.value / 1000).toFixed(0)}K</div>
+                    </div>
+                    <div className="p-3 bg-slate-50 rounded-lg">
+                      <div className="text-xs text-slate-500 uppercase tracking-wide">Avg Deal Size</div>
+                      <div className="text-lg font-semibold">${(metrics.pipeline.avgDealSize / 1000).toFixed(0)}K</div>
+                    </div>
+                  </div>
+                  <div className="pt-2 border-t border-slate-200">
+                    <div className="text-sm text-slate-600">
+                      <div className="flex justify-between mb-1">
+                        <span>Pipeline Conversion Rate:</span>
+                        <span className="font-semibold">{metrics.pipeline.conversion}%</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span>Revenue Target:</span>
+                        <span className="font-semibold">${(metrics.revenue.target / 1000).toFixed(0)}K</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Engagement & Training Metrics */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Users className="w-5 h-5" />
+                  Partner Engagement
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="p-3 bg-slate-50 rounded-lg">
+                      <div className="text-xs text-slate-500 uppercase tracking-wide">Portal Logins (30d)</div>
+                      <div className="text-lg font-semibold">{metrics.engagement.portalLogins}</div>
+                    </div>
+                    <div className="p-3 bg-slate-50 rounded-lg">
+                      <div className="text-xs text-slate-500 uppercase tracking-wide">Active Certifications</div>
+                      <div className="text-lg font-semibold">{metrics.engagement.certificationsActive}</div>
+                    </div>
+                    <div className="p-3 bg-slate-50 rounded-lg">
+                      <div className="text-xs text-slate-500 uppercase tracking-wide">Event Participation</div>
+                      <div className="text-lg font-semibold">{metrics.engagement.eventParticipation}%</div>
+                    </div>
+                    <div className="p-3 bg-slate-50 rounded-lg">
+                      <div className="text-xs text-slate-500 uppercase tracking-wide">Last Activity</div>
+                      <div className="text-sm font-semibold">{new Date(metrics.engagement.lastActivityDate).toLocaleDateString()}</div>
+                    </div>
+                  </div>
+                  <div className="pt-2 border-t border-slate-200">
+                    <div className="text-sm text-slate-600">
+                      <div className="flex justify-between mb-1">
+                        <span>Training Completion Rate:</span>
+                        <span className="font-semibold">{metrics.engagement.trainingCompletionRate}%</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span>MDF Utilization:</span>
+                        <span className="font-semibold">{metrics.engagement.marketingFundUtilization}%</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Deal Registration & Delivery Metrics */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Award className="w-5 h-5" />
+                  Deal Registration Funnel
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  <div className="space-y-2">
+                    <div className="flex justify-between items-center p-3 bg-blue-50 rounded-lg">
+                      <span className="text-sm font-medium">Submitted</span>
+                      <span className="font-bold text-blue-700">{metrics.dealRegistration.submitted}</span>
+                    </div>
+                    <div className="flex justify-between items-center p-3 bg-green-50 rounded-lg">
+                      <span className="text-sm font-medium">Approved</span>
+                      <span className="font-bold text-green-700">{metrics.dealRegistration.approved}</span>
+                    </div>
+                    <div className="flex justify-between items-center p-3 bg-purple-50 rounded-lg">
+                      <span className="text-sm font-medium">Won</span>
+                      <span className="font-bold text-purple-700">{metrics.dealRegistration.won}</span>
+                    </div>
+                  </div>
+                  <div className="pt-2 border-t border-slate-200">
+                    <div className="text-center">
+                      <div className="text-2xl font-bold text-slate-900">{metrics.dealRegistration.winRate}%</div>
+                      <div className="text-xs text-slate-500">Overall Win Rate</div>
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Activity className="w-5 h-5" />
+                  Delivery & Support
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="p-3 bg-slate-50 rounded-lg text-center">
+                      <div className="text-2xl font-bold">{metrics.delivery.avgTimeToGoLive}</div>
+                      <div className="text-xs text-slate-500">Avg Time to Go-Live (days)</div>
+                    </div>
+                    <div className="p-3 bg-slate-50 rounded-lg text-center">
+                      <div className="text-2xl font-bold">{metrics.delivery.customerSatisfaction}</div>
+                      <div className="text-xs text-slate-500">CSAT Score (/5)</div>
+                    </div>
+                  </div>
+                  <div className="pt-2 border-t border-slate-200">
+                    <div className="text-sm text-slate-600">
+                      <div className="flex justify-between mb-1">
+                        <span>Support Tickets:</span>
+                        <span className="font-semibold">{metrics.delivery.supportTickets}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span>Escalations:</span>
+                        <span className="font-semibold">{metrics.delivery.escalations}</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Health Score Breakdown */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Target className="w-5 h-5" />
+                Health Score Breakdown
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-3">
+                <div className="flex items-center justify-between p-3 bg-slate-50 rounded-lg">
+                  <span className="text-sm font-medium">Overall Health Score</span>
+                  <div className="flex items-center gap-2">
+                    <span className="font-bold text-2xl" style={{ color: getHealthColor(metrics.healthScore) }}>
+                      {metrics.healthScore}
+                    </span>
+                    <span className="text-slate-500">/100</span>
+                  </div>
+                </div>
+                <div className="text-sm text-slate-600">
+                  <div className="flex justify-between mb-2">
+                    <span>Risk Level:</span>
+                    <span className={`font-semibold ${
+                      metrics.riskLevel === 'Low' ? 'text-green-600' : 
+                      metrics.riskLevel === 'Medium' ? 'text-yellow-600' : 'text-red-600'
+                    }`}>
+                      {metrics.riskLevel}
+                    </span>
+                  </div>
+                  <div className="text-xs text-slate-500">
+                    Health score calculated based on revenue performance, engagement metrics, customer satisfaction, and deal velocity.
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      )}
     </div>
   )
 }
