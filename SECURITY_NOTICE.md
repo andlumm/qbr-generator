@@ -7,7 +7,7 @@ The OpenRouter API key was accidentally committed to the git repository and is n
 
 ### 1. Rotate OpenRouter API Key
 - Go to https://openrouter.ai/keys
-- Delete the compromised key: `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`
+- Delete the compromised key: `sk-or-v1-[REDACTED-OLD-KEY]`
 - Generate a new API key
 - Keep the new key secure and never commit it to git
 

@@ -36,7 +36,7 @@ npm i -g vercel
 
 # Set the environment variable
 vercel env add OPENROUTER_API_KEY
-# When prompted, paste: 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
+# When prompted, paste your new API key (old key was compromised)
 # Select all environments (Production, Preview, Development)
 
 # Redeploy
