@@ -223,8 +223,11 @@ export class PartnerInvestmentCalculator {
       }
     })
 
-    // Sort by ROI descending
-    return recommendations.sort((a, b) => b.expectedROI - a.expectedROI).slice(0, 4)
+    // Filter out recommendations with zero or minimal impact, sort by ROI descending
+    return recommendations
+      .filter(rec => rec.potentialARR > 1000 && rec.investment > 0) // Only show meaningful investments
+      .sort((a, b) => b.expectedROI - a.expectedROI)
+      .slice(0, 4)
   }
 
   static formatCurrency(amount: number): string {

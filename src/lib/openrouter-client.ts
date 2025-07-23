@@ -50,8 +50,9 @@ export class OpenRouterClient {
             
             STYLE:
             - No emojis, colors, badges
-            - Executive language (concise, precise)
-            - Data-driven statements
+            - Executive language (professional, solution-oriented)
+            - Data-driven statements with business context
+            - Avoid overly negative language ("subpar" → "requires optimization")
             - PPT/Management Summary ready`
           },
           {
@@ -104,6 +105,7 @@ Analyze ${partner.name} and create AI INSIGHTS BLOCK only:
 
 **Partner Data:**
 - Tier: ${partner.tier} | Region: ${partner.region} | Health Score: ${metrics.healthScore}/100
+- Partner Manager: ${partner.partnerManager} | Account Manager: ${partner.accountManager}
 - ARR: $${metrics.revenue.current.toLocaleString()} | Growth: ${metrics.revenue.growth}% QoQ
 - Pipeline: $${metrics.pipeline.value.toLocaleString()} (${metrics.pipeline.count} Deals)
 - Conversion Rate: ${metrics.pipeline.conversion}% | Avg Deal: $${metrics.pipeline.avgDealSize.toLocaleString()}
@@ -131,13 +133,21 @@ Create output exactly in this structure:
 |----------|------------------|
 [4-6 rows with key findings - numbers and business relevance only]
 
-## Priority Action Items
-[3-4 concrete bullet points without emojis, with measurable targets]
+## Strategic Priorities (Q1 2025)
+🔴 [Priority Name] (Owner: [Specific Role]) → Target: [Measurable Goal]
+🟡 [Priority Name] (Owner: [Specific Role]) → Target: [Measurable Goal]  
+🟢 [Priority Name] (Owner: [Specific Role]) → Target: [Measurable Goal]
+[REQUIRED: Always include exactly 3 priorities based on partner performance gaps. Use 🔴 for urgent health/CSAT issues, 🟡 for improvement areas like win rate/training, 🟢 for optimization/expansion opportunities. Do NOT use dashes - start directly with emoji]
 
 ## Business Impact Forecast
 | Lever | Potential ARR | Risk ARR | Investment |
 |-------|---------------|----------|------------|
 [Use the investment recommendations provided above - these are calculated based on partner tier, performance gaps, and industry ROI benchmarks]
+
+## Next Actions
+| Action | Owner | Due |
+|--------|-------|-----|
+[3 specific actions with realistic owners and dates based on partner metrics and priorities - no status needed as these are new actions]
 
 IMPORTANT: Text only, no visual elements, executive language, PPT-ready. Use ecosystem benchmarks for comparative insights and provided investment data for Business Impact Forecast.
     `
@@ -164,6 +174,11 @@ IMPORTANT: Text only, no visual elements, executive language, PPT-ready. Use eco
     // Use realistic investment calculations
     const recommendations = PartnerInvestmentCalculator.calculateRecommendedInvestments(partner, metrics)
     
+    // Calculate values needed for fallback content
+    const avgDealSize = metrics.pipeline.avgDealSize
+    const pipelineUpside = Math.round(metrics.pipeline.value * 0.12)
+    const churnRisk = Math.round(metrics.revenue.current * 0.15)
+    
     return `
 ## Executive Summary
 
@@ -179,12 +194,11 @@ ${partner.name} shows ${metrics.revenue.growth > 15 ? 'above-average' : metrics.
 | Customer Satisfaction | ${metrics.delivery.customerSatisfaction}/5 (Target: 4.5+) - ${metrics.delivery.customerSatisfaction < 4.5 ? 'Churn probability 40% higher, $' + Math.round(churnRisk/1000) + 'k ARR at risk' : 'Stable customer relationships'} |
 | Deal Registration | ${metrics.dealRegistration.winRate}% Win Rate - ${metrics.dealRegistration.winRate > 25 ? 'Above-average performance' : 'Optimization needed in sales process'} |
 
-## Priority Action Items
+## Strategic Priorities (Q1 2025)
 
-- ${metrics.pipeline.conversion < 30 ? 'Increase pipeline conversion through structured sales coaching from ' + metrics.pipeline.conversion + '% to 35% (Impact: +$' + Math.round(pipelineUpside/1000) + 'k ARR)' : 'Leverage pipeline momentum for enterprise expansion'}
-- ${metrics.engagement.trainingCompletionRate < 90 ? 'Increase enablement rate to 95% to unlock more complex deals (Target: +25% Average Deal Size)' : 'Drive advanced certifications for specialized solutions'}  
-- ${metrics.delivery.customerSatisfaction < 4.5 ? 'Implement Customer Success Recovery Program (Executive Sponsor, monthly reviews)' : 'Launch Customer Advocacy Program for reference-driven growth'}
-- Optimize Deal Registration Funnel: From ${metrics.dealRegistration.submitted} submitted to 85% approval rate
+🔴 ${metrics.pipeline.conversion < 30 ? 'Increase pipeline conversion through structured sales coaching from ' + metrics.pipeline.conversion + '% to 35% (Impact: +$' + Math.round(pipelineUpside/1000) + 'k ARR)' : 'Leverage pipeline momentum for enterprise expansion'}
+🟡 ${metrics.engagement.trainingCompletionRate < 90 ? 'Increase enablement rate to 95% to unlock more complex deals (Target: +25% Average Deal Size)' : 'Drive advanced certifications for specialized solutions'}  
+🟢 ${metrics.delivery.customerSatisfaction < 4.5 ? 'Implement Customer Success Recovery Program (Executive Sponsor, monthly reviews)' : 'Launch Customer Advocacy Program for reference-driven growth'}
 
 ## Business Impact Forecast
 

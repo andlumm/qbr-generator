@@ -131,8 +131,13 @@ export const QBRDashboard = ({ partner, metrics, allPartnerMetrics }: QBRDashboa
             </div>
             <div>
               <div className="text-slate-600 font-medium">Growth Rate</div>
-              <div className="text-lg font-semibold" style={{ color: metrics.revenue.growth > 0 ? '#10b981' : '#ef4444' }}>
-                {metrics.revenue.growth > 0 ? '+' : ''}{metrics.revenue.growth.toFixed(1)}% QoQ
+              <div className="flex items-center gap-2">
+                <div className="text-lg font-semibold" style={{ color: metrics.revenue.growth > 0 ? '#10b981' : '#ef4444' }}>
+                  {metrics.revenue.growth > 0 ? '+' : ''}{metrics.revenue.growth.toFixed(1)}% QoQ
+                </div>
+                <span className="text-lg">
+                  {metrics.revenue.growth > 10 ? '↗️' : metrics.revenue.growth > 0 ? '➡️' : '↘️'}
+                </span>
               </div>
             </div>
             <div>
@@ -346,65 +351,101 @@ export const QBRDashboard = ({ partner, metrics, allPartnerMetrics }: QBRDashboa
       */}
 
       {/* AI Insights Section */}
-      <div className="relative">
-        <div className="absolute inset-0 bg-gradient-to-r from-purple-600/10 to-blue-600/10 rounded-xl blur-xl"></div>
-        <Card className="relative border-2 border-purple-200/50 bg-gradient-to-br from-white via-purple-50/30 to-blue-50/30 shadow-xl">
-          <CardHeader className="pb-4">
-            <div className="flex items-center justify-between">
-              <CardTitle className="flex items-center gap-3 text-purple-900">
-                <div className="p-2 bg-gradient-to-r from-purple-600 to-blue-600 rounded-lg">
-                  <Brain className="w-6 h-6 text-white" />
-                </div>
-                <div>
-                  <div className="text-xl font-bold">AI-Strategische Insights</div>
-                  <div className="text-sm text-purple-600 font-normal">Powered by Claude 3 Sonnet</div>
-                </div>
-              </CardTitle>
-              {isLoadingInsights && (
-                <div className="flex items-center gap-2 px-3 py-1 bg-purple-100 rounded-full">
-                  <Loader2 className="w-4 h-4 animate-spin text-purple-600" />
-                  <span className="text-sm text-purple-600">Analysiere...</span>
-                </div>
-              )}
-            </div>
-          </CardHeader>
-          <CardContent>
-            {isLoadingInsights ? (
-              <div className="flex flex-col items-center justify-center py-12 space-y-4">
-                <div className="relative">
-                  <div className="w-16 h-16 border-4 border-purple-200 rounded-full"></div>
-                  <div className="absolute top-0 left-0 w-16 h-16 border-4 border-purple-600 rounded-full animate-spin border-t-transparent"></div>
-                </div>
-                <div className="text-center">
-                  <p className="text-lg font-medium text-purple-800">Generiere strategische Insights</p>
-                  <p className="text-sm text-purple-600">Claude 3 analysiert Partnerdaten...</p>
-                </div>
+      <Card className="border border-slate-200 bg-white shadow-sm">
+        <CardHeader className="border-b border-slate-100 bg-slate-50/50">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-8 bg-blue-600 rounded flex items-center justify-center">
+                <Brain className="w-4 h-4 text-white" />
               </div>
+              <div>
+                <h3 className="text-lg font-semibold text-slate-900">Strategic Analysis</h3>
+                <p className="text-sm text-slate-500">AI-powered insights • Claude 3 Sonnet</p>
+              </div>
+            </div>
+            {isLoadingInsights && (
+              <div className="flex items-center gap-3">
+                <div className="animate-spin rounded-full h-5 w-5 border-2 border-blue-600 border-t-transparent"></div>
+                <span className="text-slate-600">Analyzing partner data...</span>
+              </div>
+            )}
+          </div>
+        </CardHeader>
+        <CardContent>
+          {isLoadingInsights ? (
+            <div className="flex items-center justify-center py-12">
+              <div className="flex items-center gap-3">
+                <div className="animate-spin rounded-full h-6 w-6 border-2 border-blue-600 border-t-transparent"></div>
+                <span className="text-slate-600 font-medium">Analyzing partner data...</span>
+              </div>
+            </div>
             ) : aiInsights ? (
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="space-y-6"
+                className="space-y-8"
               >
-                <div className="space-y-6">
+                <div className="space-y-8">
                   {aiInsights.split('## ').filter(section => section.trim()).map((section, index) => {
                     const lines = section.trim().split('\n').filter(line => line.trim())
                     const title = lines[0]
                     const content = lines.slice(1).join('\n')
                     
+                    // Determine section styling based on title
+                    const getSectionStyle = (title: string) => {
+                      if (title === 'Executive Summary') {
+                        return {
+                          borderColor: 'border-blue-600',
+                          bgColor: 'bg-blue-50',
+                          textColor: 'text-blue-900',
+                          titleSize: 'text-xl'
+                        }
+                      } else if (title.includes('Strategic Priorities')) {
+                        return {
+                          borderColor: 'border-green-500',
+                          bgColor: 'bg-green-50',
+                          textColor: 'text-green-900',
+                          titleSize: 'text-lg'
+                        }
+                      } else if (title === 'Business Impact Forecast') {
+                        return {
+                          borderColor: 'border-amber-500',
+                          bgColor: 'bg-amber-50',
+                          textColor: 'text-amber-900',
+                          titleSize: 'text-lg'
+                        }
+                      } else if (title === 'Next Actions') {
+                        return {
+                          borderColor: 'border-red-500',
+                          bgColor: 'bg-red-50',
+                          textColor: 'text-red-900',
+                          titleSize: 'text-lg'
+                        }
+                      } else {
+                        return {
+                          borderColor: 'border-slate-300',
+                          bgColor: 'bg-slate-50',
+                          textColor: 'text-slate-800',
+                          titleSize: 'text-lg'
+                        }
+                      }
+                    }
+                    
+                    const sectionStyle = getSectionStyle(title)
+                    
                     return (
                       <div key={index}>
-                        <div className="bg-slate-100 border-l-4 border-slate-600 p-4 mb-4">
-                          <h2 className="text-xl font-bold text-slate-800">{title}</h2>
+                        <div className={`${sectionStyle.bgColor} border-l-4 ${sectionStyle.borderColor} p-4 mb-4`}>
+                          <h2 className={`${sectionStyle.titleSize} font-semibold ${sectionStyle.textColor}`}>{title}</h2>
                         </div>
                         
                         {title === 'Key Insights' && content.includes('|') ? (
                           <div className="mb-6">
-                            <table className="w-full bg-white border border-gray-300 rounded-lg">
-                              <thead className="bg-slate-50">
+                            <table className="w-full bg-white border border-slate-200 rounded-lg overflow-hidden">
+                              <thead className="bg-slate-100">
                                 <tr>
-                                  <th className="px-4 py-3 text-left font-semibold text-slate-700 border-b w-1/4">Category</th>
-                                  <th className="px-4 py-3 text-left font-semibold text-slate-700 border-b">Metric/Statement</th>
+                                  <th className="px-6 py-4 text-left font-semibold text-slate-800 border-b border-slate-200 w-1/3">Category</th>
+                                  <th className="px-6 py-4 text-left font-semibold text-slate-800 border-b border-slate-200">Metric/Statement</th>
                                 </tr>
                               </thead>
                               <tbody>
@@ -420,9 +461,9 @@ export const QBRDashboard = ({ partner, metrics, allPartnerMetrics }: QBRDashboa
                                   const desc = parts[2]?.trim()
                                   if (!cat || !desc) return null
                                   return (
-                                    <tr key={i} className="border-b border-gray-200">
-                                      <td className="px-4 py-3 text-slate-900 font-medium align-top">{cat}</td>
-                                      <td className="px-4 py-3 text-slate-700">{desc}</td>
+                                    <tr key={i} className={`${i % 2 === 0 ? 'bg-white' : 'bg-slate-50'} hover:bg-slate-100 transition-colors`}>
+                                      <td className="px-6 py-4 text-slate-900 font-semibold align-top">{cat}</td>
+                                      <td className="px-6 py-4 text-slate-700 leading-relaxed">{desc}</td>
                                     </tr>
                                   )
                                 }).filter(Boolean)}
@@ -431,13 +472,13 @@ export const QBRDashboard = ({ partner, metrics, allPartnerMetrics }: QBRDashboa
                           </div>
                         ) : title === 'Business Impact Forecast' && content.includes('|') ? (
                           <div className="mb-6">
-                            <table className="w-full bg-white border border-gray-300 rounded-lg">
-                              <thead className="bg-slate-50">
+                            <table className="w-full bg-white border border-slate-200 rounded-lg overflow-hidden">
+                              <thead className="bg-slate-100">
                                 <tr>
-                                  <th className="px-4 py-3 text-left font-semibold text-slate-700 border-b">Lever</th>
-                                  <th className="px-4 py-3 text-left font-semibold text-slate-700 border-b">Potential ARR</th>
-                                  <th className="px-4 py-3 text-left font-semibold text-slate-700 border-b">Risk ARR</th>
-                                  <th className="px-4 py-3 text-left font-semibold text-slate-700 border-b">Investment</th>
+                                  <th className="px-6 py-4 text-left font-semibold text-slate-800 border-b border-slate-200">Lever</th>
+                                  <th className="px-6 py-4 text-right font-semibold text-slate-800 border-b border-slate-200">Potential ARR</th>
+                                  <th className="px-6 py-4 text-right font-semibold text-slate-800 border-b border-slate-200">Risk ARR</th>
+                                  <th className="px-6 py-4 text-right font-semibold text-slate-800 border-b border-slate-200">Investment</th>
                                 </tr>
                               </thead>
                               <tbody>
@@ -449,31 +490,64 @@ export const QBRDashboard = ({ partner, metrics, allPartnerMetrics }: QBRDashboa
                                 ).map((row, i) => {
                                   const parts = row.split('|')
                                   if (parts.length < 5) return null
-                                  const hebel = parts[1]?.trim()
-                                  const potenzial = parts[2]?.trim()
-                                  const risiko = parts[3]?.trim()
-                                  const invest = parts[4]?.trim()
-                                  if (!hebel || !potenzial || !risiko || !invest) return null
+                                  const lever = parts[1]?.trim()
+                                  const potential = parts[2]?.trim()
+                                  const risk = parts[3]?.trim()
+                                  const investment = parts[4]?.trim()
+                                  if (!lever || !potential || !risk || !investment) return null
                                   return (
-                                    <tr key={i} className="border-b border-gray-200">
-                                      <td className="px-4 py-3 text-slate-900 font-medium">{hebel}</td>
-                                      <td className="px-4 py-3 text-slate-700">{potenzial}</td>
-                                      <td className="px-4 py-3 text-slate-700">{risiko}</td>
-                                      <td className="px-4 py-3 text-slate-900 font-medium">{invest}</td>
+                                    <tr key={i} className={`${i % 2 === 0 ? 'bg-white' : 'bg-slate-50'} hover:bg-slate-100 transition-colors`}>
+                                      <td className="px-6 py-4 text-slate-900 font-semibold">{lever}</td>
+                                      <td className="px-6 py-4 text-right font-mono text-green-700 font-semibold">{potential}</td>
+                                      <td className="px-6 py-4 text-right font-mono text-red-600 font-semibold">{risk}</td>
+                                      <td className="px-6 py-4 text-right font-mono text-slate-900 font-semibold">{investment}</td>
                                     </tr>
                                   )
                                 }).filter(Boolean)}
                               </tbody>
                             </table>
                           </div>
-                        ) : title === 'Priority Action Items' ? (
-                          <div className="space-y-2">
-                            {content.split('\n').filter(line => line.trim().startsWith('-')).map((item, i) => (
-                              <div key={i} className="flex items-start gap-2">
-                                <div className="w-1.5 h-1.5 bg-slate-400 rounded-full mt-2 flex-shrink-0"></div>
-                                <span className="text-slate-700">{item.replace(/^-\s*/, '')}</span>
+                        ) : title === 'Strategic Priorities (Q1 2025)' ? (
+                          <div className="space-y-3">
+                            {content.split('\n').filter(line => line.trim() && (line.trim().startsWith('🔴') || line.trim().startsWith('🟡') || line.trim().startsWith('🟢') || line.trim().startsWith('-'))).map((item, i) => (
+                              <div key={i} className="flex items-start gap-3 p-3 bg-slate-50 rounded-lg border-l-4 border-slate-300">
+                                <div className="text-slate-700 leading-relaxed">{item.replace(/^-\s*/, '').trim()}</div>
                               </div>
                             ))}
+                          </div>
+                        ) : title === 'Next Actions' && content.includes('|') ? (
+                          <div className="overflow-x-auto">
+                            <table className="w-full bg-white border border-slate-200 rounded-lg overflow-hidden">
+                              <thead className="bg-slate-100">
+                                <tr>
+                                  <th className="px-6 py-4 text-left font-semibold text-slate-800 border-b border-slate-200">Action</th>
+                                  <th className="px-6 py-4 text-left font-semibold text-slate-800 border-b border-slate-200">Owner</th>
+                                  <th className="px-6 py-4 text-left font-semibold text-slate-800 border-b border-slate-200">Due</th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                {content.split('\n').filter(line => 
+                                  line.includes('|') && 
+                                  !line.includes('---') && 
+                                  !line.includes('Action') &&
+                                  line.trim() !== ''
+                                ).map((row, i) => {
+                                  const parts = row.split('|')
+                                  if (parts.length < 4) return null
+                                  const action = parts[1]?.trim()
+                                  const owner = parts[2]?.trim()
+                                  const due = parts[3]?.trim()
+                                  if (!action || !owner || !due) return null
+                                  return (
+                                    <tr key={i} className={`${i % 2 === 0 ? 'bg-white' : 'bg-slate-50'} hover:bg-slate-100 transition-colors`}>
+                                      <td className="px-6 py-4 text-slate-900">{action}</td>
+                                      <td className="px-6 py-4 text-slate-700 font-semibold">{owner}</td>
+                                      <td className="px-6 py-4 text-slate-700 font-medium">{due}</td>
+                                    </tr>
+                                  )
+                                }).filter(Boolean)}
+                              </tbody>
+                            </table>
                           </div>
                         ) : (
                           <div 
@@ -489,9 +563,17 @@ export const QBRDashboard = ({ partner, metrics, allPartnerMetrics }: QBRDashboa
                 </div>
                 
                 {/* AI Attribution Footer */}
-                <div className="mt-6 p-3 bg-slate-50 rounded-lg border border-slate-200">
-                  <div className="text-center text-sm text-slate-600">
-                    Generated by <span className="font-medium">Claude 3 Sonnet</span> • via <span className="font-medium">OpenRouter API</span>
+                <div className="mt-8 p-4 bg-slate-50 rounded-lg border border-slate-200">
+                  <div className="text-center">
+                    <div className="text-sm text-slate-600 mb-2">
+                      🧠 Generated by <span className="font-semibold">Claude 3 Sonnet</span> • via <span className="font-semibold">OpenRouter API</span>
+                    </div>
+                    <div className="text-xs text-slate-500">
+                      Built with Claude Code — open to feedback from Partner Strategy Leaders!
+                    </div>
+                    <div className="text-xs text-slate-400 mt-1">
+                      #AI #Partnerships #GTM #PartnerStrategy
+                    </div>
                   </div>
                 </div>
               </motion.div>
@@ -505,107 +587,13 @@ export const QBRDashboard = ({ partner, metrics, allPartnerMetrics }: QBRDashboa
             )}
           </CardContent>
         </Card>
-      </div>
 
-      {/* Strategic Priorities (Q1) */}
-      <Card className="mb-6">
-        <CardHeader>
-          <CardTitle>Strategic Priorities (Q1 2025)</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-3">
-            {(() => {
-              const priorities = []
-              
-              // Determine priorities based on metrics
-              if (metrics.healthScore < 75) {
-                priorities.push({ emoji: '🔥', type: 'Health Recovery', desc: 'Urgent health score remediation required' })
-              }
-              if (metrics.delivery.customerSatisfaction < 4.5) {
-                priorities.push({ emoji: '🔥', type: 'CSAT Recovery', desc: 'Customer satisfaction below target (4.5)' })
-              }
-              if (metrics.revenue.growth > 15) {
-                priorities.push({ emoji: '🟢', type: 'Expansion', desc: 'Capitalize on strong growth momentum' })
-              }
-              if (metrics.dealRegistration.winRate < 30) {
-                priorities.push({ emoji: '🟡', type: 'Win Rate Coaching', desc: 'Pipeline conversion needs improvement' })
-              }
-              if (metrics.engagement.trainingCompletionRate < 85) {
-                priorities.push({ emoji: '🟡', type: 'Enablement Focus', desc: 'Training completion below benchmark' })
-              }
-              if (priorities.length === 0) {
-                priorities.push({ emoji: '🟢', type: 'Performance Optimization', desc: 'Focus on continuous improvement' })
-              }
-              
-              return priorities.slice(0, 3).map((priority, index) => (
-                <div key={index} className="flex items-center gap-3 p-3 bg-slate-50 rounded-lg">
-                  <span className="text-xl">{priority.emoji}</span>
-                  <div>
-                    <div className="font-semibold">{priority.type}</div>
-                    <div className="text-sm text-slate-600">{priority.desc}</div>
-                  </div>
-                </div>
-              ))
-            })()}
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Next Actions */}
-      <Card className="mb-6">
-        <CardHeader>
-          <CardTitle>Next Actions</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-3">
-            {(() => {
-              const actions = []
-              
-              if (metrics.healthScore < 75) {
-                actions.push({ 
-                  action: 'Schedule health assessment call with partner leadership',
-                  owner: partner.partnerManager,
-                  eta: 'End of Week'
-                })
-              }
-              if (metrics.engagement.trainingCompletionRate < 85) {
-                actions.push({
-                  action: 'Enroll partner in accelerated enablement program',
-                  owner: 'Enablement Team',
-                  eta: 'Next Monday'
-                })
-              }
-              if (metrics.dealRegistration.winRate < 30) {
-                actions.push({
-                  action: 'Implement weekly sales coaching sessions',
-                  owner: partner.accountManager,
-                  eta: 'This Week'
-                })
-              }
-              
-              // Ensure we always have at least one action
-              if (actions.length === 0) {
-                actions.push({
-                  action: 'Schedule quarterly business review meeting',
-                  owner: partner.partnerManager,
-                  eta: 'Next Week'
-                })
-              }
-              
-              return actions.slice(0, 3).map((item, index) => (
-                <div key={index} className="flex justify-between items-start p-3 border border-slate-200 rounded-lg">
-                  <div className="flex-1">
-                    <div className="font-medium">{item.action}</div>
-                    <div className="text-sm text-slate-600 mt-1">
-                      <span className="font-medium">Owner:</span> {item.owner} • <span className="font-medium">ETA:</span> {item.eta}
-                    </div>
-                  </div>
-                </div>
-              ))
-            })()}
-          </div>
-        </CardContent>
-      </Card>
+      {/* 
+      REMOVED: Static Strategic Priorities and Next Actions sections
+      These are now fully AI-generated as part of the Claude insights for consistency
+      All content (Executive Summary, Key Insights, Strategic Priorities, Business Impact, Next Actions) 
+      is now generated by Claude 3 Sonnet with consistent tone and logic
+      */}
 
       {/* 
       COMMENTED OUT FOR EXECUTIVE TEMPLATE - CAN BE RESTORED LATER

@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { useParams } from 'next/navigation'
+import Link from 'next/link'
 import { motion } from 'framer-motion'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { generateDummyPartners, generateDummyMetrics, Partner, PartnerMetrics } from '@/lib/dummy-data'
@@ -66,10 +67,10 @@ export default function PartnerQBRPage() {
       <div className="container mx-auto px-4 py-8">
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
-          <a href="/" className="flex items-center gap-2 text-slate-600 hover:text-slate-900">
+          <Link href="/" className="flex items-center gap-2 text-slate-600 hover:text-slate-900">
             <ArrowLeft className="w-5 h-5" />
             Back to Dashboard
-          </a>
+          </Link>
           <div className="flex gap-4">
             <button className="flex items-center gap-2 px-4 py-2 border border-slate-300 rounded-lg hover:bg-slate-50">
               <Mail className="w-4 h-4" />
@@ -82,32 +83,10 @@ export default function PartnerQBRPage() {
           </div>
         </div>
 
-        {/* Partner Info */}
-        <Card className="mb-8">
-          <CardHeader>
-            <div className="flex items-start justify-between">
-              <div>
-                <CardTitle className="text-2xl">{partner.name}</CardTitle>
-                <CardDescription className="mt-2">
-                  <span className={`inline-flex px-2 py-1 text-xs rounded-full mr-2 ${
-                    partner.tier === 'Strategic' ? 'bg-purple-100 text-purple-700' :
-                    partner.tier === 'Select' ? 'bg-blue-100 text-blue-700' :
-                    'bg-gray-100 text-gray-700'
-                  }`}>
-                    {partner.tier} Partner
-                  </span>
-                  <span className="text-sm">{partner.region} • {partner.segment} Segment</span>
-                </CardDescription>
-              </div>
-              <div className="text-right">
-                <div className="text-sm text-slate-600">Partner Manager</div>
-                <div className="font-medium">{partner.partnerManager}</div>
-                <div className="text-sm text-slate-600 mt-2">Account Manager</div>
-                <div className="font-medium">{partner.accountManager}</div>
-              </div>
-            </div>
-          </CardHeader>
-        </Card>
+        {/* 
+        REMOVED: Partner Info Card - Now handled by QBRDashboard Partnership Overview section
+        This eliminates the duplicate header issue 
+        */}
 
         {/* Quick Stats */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
