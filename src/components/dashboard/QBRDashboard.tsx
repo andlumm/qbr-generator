@@ -145,82 +145,152 @@ ${partner.name} (${partner.tier} Partner) shows ${metrics.revenue.growth > 0 ? '
       {/* Partnership Overview */}
       <Card className="mb-8">
         <CardContent className="p-8">
-          {/* Partner Name as Main Header */}
-          <div className="text-center mb-8">
-            <h1 className="text-4xl font-bold text-slate-900 mb-2">{partner.name}</h1>
-            <div className="flex items-center justify-center gap-4">
-              <span className={`inline-flex px-3 py-1 text-sm font-medium rounded-full ${
-                partner.tier === 'Strategic' ? 'bg-purple-100 text-purple-700' :
-                partner.tier === 'Select' ? 'bg-blue-100 text-blue-700' :
-                'bg-gray-100 text-gray-700'
-              }`}>
-                {partner.tier} Partner
-              </span>
-              <span className="text-slate-600">•</span>
-              <span className="text-lg text-slate-700">{partner.region}</span>
-              <span className="text-slate-600">•</span>
-              <span className="text-lg font-medium text-slate-700">{metrics.quarter}</span>
+          {/* Modern Partner Header */}
+          <div className="text-center mb-12">
+            {/* Partner Name with better typography */}
+            <div className="mb-6">
+              <h1 className="text-5xl font-bold text-slate-900 mb-3 tracking-tight">{partner.name}</h1>
+              <div className="w-24 h-1 bg-gradient-to-r from-blue-600 to-indigo-600 mx-auto rounded-full"></div>
+            </div>
+            
+            {/* Enhanced metadata with modern styling */}
+            <div className="flex items-center justify-center gap-6 flex-wrap">
+              <div className="flex items-center gap-2">
+                <div className={`w-3 h-3 rounded-full ${
+                  partner.tier === 'Strategic' ? 'bg-purple-500' :
+                  partner.tier === 'Select' ? 'bg-blue-500' :
+                  'bg-gray-500'
+                }`}></div>
+                <span className={`px-4 py-2 text-sm font-semibold rounded-lg border ${
+                  partner.tier === 'Strategic' ? 'bg-purple-50 text-purple-700 border-purple-200' :
+                  partner.tier === 'Select' ? 'bg-blue-50 text-blue-700 border-blue-200' :
+                  'bg-gray-50 text-gray-700 border-gray-200'
+                }`}>
+                  {partner.tier} Partner
+                </span>
+              </div>
+              
+              <div className="flex items-center gap-2 px-4 py-2 bg-slate-50 rounded-lg border border-slate-200">
+                <svg className="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                </svg>
+                <span className="text-sm font-medium text-slate-700">{partner.region}</span>
+              </div>
+              
+              <div className="flex items-center gap-2 px-4 py-2 bg-slate-50 rounded-lg border border-slate-200">
+                <svg className="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3a4 4 0 118 0v4m-4 8a2 2 0 100-4 2 2 0 000 4zm6 3c0 3.866-4.343 7-9 7s-9-3.134-9-7a19.93 19.93 0 013.118-10.5 19.93 19.93 0 013.118-10.5" />
+                </svg>
+                <span className="text-sm font-medium text-slate-700">{metrics.quarter}</span>
+              </div>
             </div>
           </div>
 
-          {/* Key Metrics Grid */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-            <div className="text-center">
-              <div className="text-sm text-slate-500 uppercase tracking-wide font-medium mb-2">Health Score</div>
-              <div className="text-3xl font-bold mb-1" style={{ color: getHealthColor(metrics.healthScore) }}>
+          {/* Enhanced Key Metrics Grid */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+            {/* Health Score Card */}
+            <div className="group relative p-6 bg-white rounded-xl border border-slate-200 hover:border-slate-300 transition-all duration-200 hover:shadow-lg">
+              <div className="flex items-center justify-between mb-4">
+                <div className="p-2 rounded-lg bg-slate-100">
+                  <svg className="w-5 h-5 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                  </svg>
+                </div>
+                <div className="text-xs font-medium text-slate-500 uppercase tracking-wider">Health Score</div>
+              </div>
+              <div className="text-4xl font-bold mb-2" style={{ color: getHealthColor(metrics.healthScore) }}>
                 {metrics.healthScore}
               </div>
-              <div className="text-sm text-slate-500">Target: 85</div>
+              <div className="flex items-center gap-2">
+                <span className="text-sm text-slate-500">Target: 85</span>
+                <div className={`w-2 h-2 rounded-full ${metrics.healthScore >= 85 ? 'bg-green-500' : metrics.healthScore >= 70 ? 'bg-yellow-500' : 'bg-red-500'}`}></div>
+              </div>
             </div>
             
-            <div className="text-center">
-              <div className="text-sm text-slate-500 uppercase tracking-wide font-medium mb-2">Current Revenue</div>
-              <div className="text-3xl font-bold text-slate-900 mb-1">
+            {/* Revenue Card */}
+            <div className="group relative p-6 bg-white rounded-xl border border-slate-200 hover:border-slate-300 transition-all duration-200 hover:shadow-lg">
+              <div className="flex items-center justify-between mb-4">
+                <div className="p-2 rounded-lg bg-green-100">
+                  <DollarSign className="w-5 h-5 text-green-600" />
+                </div>
+                <div className="text-xs font-medium text-slate-500 uppercase tracking-wider">Current Revenue</div>
+              </div>
+              <div className="text-4xl font-bold text-slate-900 mb-2">
                 ${(metrics.revenue.current / 1000).toFixed(0)}K
               </div>
-              <div className="flex items-center justify-center gap-1">
-                <span className="text-sm font-medium" style={{ color: metrics.revenue.growth > 0 ? '#10b981' : '#ef4444' }}>
+              <div className="flex items-center gap-2">
+                <span className={`text-sm font-medium px-2 py-1 rounded-full ${
+                  metrics.revenue.growth > 0 ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
+                }`}>
                   {metrics.revenue.growth > 0 ? '+' : ''}{metrics.revenue.growth.toFixed(1)}% QoQ
                 </span>
-                <span className="text-sm">
-                  {metrics.revenue.growth > 10 ? '↗️' : metrics.revenue.growth > 0 ? '➡️' : '↘️'}
-                </span>
+                <TrendingUp className={`w-4 h-4 ${metrics.revenue.growth > 0 ? 'text-green-500' : 'text-red-500'}`} />
               </div>
             </div>
             
-            <div className="text-center">
-              <div className="text-sm text-slate-500 uppercase tracking-wide font-medium mb-2">Pipeline</div>
-              <div className="text-3xl font-bold text-slate-900 mb-1">
+            {/* Pipeline Card */}
+            <div className="group relative p-6 bg-white rounded-xl border border-slate-200 hover:border-slate-300 transition-all duration-200 hover:shadow-lg">
+              <div className="flex items-center justify-between mb-4">
+                <div className="p-2 rounded-lg bg-blue-100">
+                  <Target className="w-5 h-5 text-blue-600" />
+                </div>
+                <div className="text-xs font-medium text-slate-500 uppercase tracking-wider">Pipeline</div>
+              </div>
+              <div className="text-4xl font-bold text-slate-900 mb-2">
                 ${(metrics.pipeline.value / 1000).toFixed(0)}K
               </div>
-              <div className="text-sm text-slate-500">{metrics.pipeline.count} opportunities</div>
+              <div className="flex items-center gap-2">
+                <span className="text-sm text-slate-500">{metrics.pipeline.count} opportunities</span>
+                <div className="w-2 h-2 rounded-full bg-blue-500"></div>
+              </div>
             </div>
             
-            <div className="text-center">
-              <div className="text-sm text-slate-500 uppercase tracking-wide font-medium mb-2">Risk Level</div>
-              <div className="flex items-center justify-center gap-2 mb-1">
-                {metrics.riskLevel === 'Low' && <CheckCircle className="w-6 h-6 text-green-500" />}
-                {metrics.riskLevel === 'Medium' && <AlertCircle className="w-6 h-6 text-yellow-500" />}
-                {metrics.riskLevel === 'High' && <AlertCircle className="w-6 h-6 text-red-500" />}
-                <span className="text-2xl font-bold" style={{ 
-                  color: metrics.riskLevel === 'Low' ? '#10b981' : metrics.riskLevel === 'Medium' ? '#f59e0b' : '#ef4444' 
-                }}>
-                  {metrics.riskLevel}
-                </span>
+            {/* Risk Level Card */}
+            <div className="group relative p-6 bg-white rounded-xl border border-slate-200 hover:border-slate-300 transition-all duration-200 hover:shadow-lg">
+              <div className="flex items-center justify-between mb-4">
+                <div className={`p-2 rounded-lg ${
+                  metrics.riskLevel === 'Low' ? 'bg-green-100' : metrics.riskLevel === 'Medium' ? 'bg-yellow-100' : 'bg-red-100'
+                }`}>
+                  {metrics.riskLevel === 'Low' ? <CheckCircle className="w-5 h-5 text-green-600" /> : <AlertCircle className={`w-5 h-5 ${metrics.riskLevel === 'Medium' ? 'text-yellow-600' : 'text-red-600'}`} />}
+                </div>
+                <div className="text-xs font-medium text-slate-500 uppercase tracking-wider">Risk Level</div>
+              </div>
+              <div className={`text-4xl font-bold mb-2 ${
+                metrics.riskLevel === 'Low' ? 'text-green-600' : metrics.riskLevel === 'Medium' ? 'text-yellow-600' : 'text-red-600'
+              }`}>
+                {metrics.riskLevel}
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="text-sm text-slate-500">Current status</span>
+                <div className={`w-2 h-2 rounded-full ${
+                  metrics.riskLevel === 'Low' ? 'bg-green-500' : metrics.riskLevel === 'Medium' ? 'bg-yellow-500' : 'bg-red-500'
+                }`}></div>
               </div>
             </div>
           </div>
 
-          {/* Partner Managers */}
-          <div className="mt-8 pt-6 border-t border-slate-200">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-center">
-              <div>
-                <div className="text-sm text-slate-500 uppercase tracking-wide font-medium mb-1">Partner Manager</div>
-                <div className="text-lg font-semibold text-slate-900">{partner.partnerManager}</div>
+          {/* Enhanced Partner Managers Section */}
+          <div className="mt-12 pt-8 border-t border-slate-200">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              <div className="flex items-center gap-4 p-4 bg-slate-50 rounded-lg border border-slate-200">
+                <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center">
+                  <Users className="w-6 h-6 text-white" />
+                </div>
+                <div>
+                  <div className="text-xs font-medium text-slate-500 uppercase tracking-wider mb-1">Partner Manager</div>
+                  <div className="text-lg font-semibold text-slate-900">{partner.partnerManager}</div>
+                </div>
               </div>
-              <div>
-                <div className="text-sm text-slate-500 uppercase tracking-wide font-medium mb-1">Account Manager</div>
-                <div className="text-lg font-semibold text-slate-900">{partner.accountManager}</div>
+              
+              <div className="flex items-center gap-4 p-4 bg-slate-50 rounded-lg border border-slate-200">
+                <div className="w-12 h-12 bg-gradient-to-br from-green-500 to-green-600 rounded-full flex items-center justify-center">
+                  <Target className="w-6 h-6 text-white" />
+                </div>
+                <div>
+                  <div className="text-xs font-medium text-slate-500 uppercase tracking-wider mb-1">Account Manager</div>
+                  <div className="text-lg font-semibold text-slate-900">{partner.accountManager}</div>
+                </div>
               </div>
             </div>
           </div>
