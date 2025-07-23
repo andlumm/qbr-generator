@@ -74,9 +74,10 @@ Failed to connect to OpenRouter API for QBR generation.
 **Most likely cause:** OpenRouter API key not configured in Vercel environment variables.
 
 **To fix this issue:**
-1. Go to Vercel Dashboard → Project Settings → Environment Variables
-2. Add: \`OPENROUTER_API_KEY\` = \`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\`
-3. Redeploy the application
+1. Get a new OpenRouter API key (old one was compromised)
+2. Go to Vercel Dashboard → Project Settings → Environment Variables
+3. Add: \`OPENROUTER_API_KEY\` = \`[your_new_api_key]\`
+4. Redeploy the application
 
 **For now, here's a basic analysis:**
 

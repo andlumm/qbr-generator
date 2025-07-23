@@ -20,7 +20,7 @@ You need to add the `OPENROUTER_API_KEY` environment variable to your Vercel pro
 3. **Add the Environment Variable:**
    - Click "Add New" button
    - **Name:** `OPENROUTER_API_KEY`
-   - **Value:** `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`
+   - **Value:** `[GET NEW API KEY FROM OPENROUTER - OLD KEY WAS COMPROMISED]`
    - **Environments:** Select all (Production, Preview, Development)
    - Click "Save"
 
