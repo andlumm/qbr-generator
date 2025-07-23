@@ -149,50 +149,15 @@ export default function PartnerQBRPage() {
           </Card>
         </div>
 
-        {/* QBR Generation */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Quarterly Business Review Generator</CardTitle>
-            <CardDescription>
-              Generate a comprehensive QBR report with AI-powered insights and recommendations
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            {!qbrContent ? (
-              <div className="text-center py-12">
-                <Sparkles className="w-16 h-16 text-blue-600 mx-auto mb-4" />
-                <h3 className="text-xl font-semibold mb-2">Ready to Generate QBR</h3>
-                <p className="text-slate-600 mb-6">
-                  Our AI will analyze all partner data and create a comprehensive QBR in seconds
-                </p>
-                <button
-                  onClick={generateQBR}
-                  disabled={isGenerating}
-                  className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-3 rounded-lg font-medium hover:shadow-lg transition-all flex items-center gap-2 mx-auto"
-                >
-                  {isGenerating ? (
-                    <>
-                      <Loader2 className="w-5 h-5 animate-spin" />
-                      Generating QBR...
-                    </>
-                  ) : (
-                    <>
-                      <Sparkles className="w-5 h-5" />
-                      Generate QBR Report
-                    </>
-                  )}
-                </button>
-              </div>
-            ) : qbrContent === 'dashboard' ? (
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-              >
-                <QBRDashboard partner={partner} metrics={metrics} allPartnerMetrics={allPartnerMetrics} />
-              </motion.div>
-            ) : null}
-          </CardContent>
-        </Card>
+        {/* QBR Dashboard - Always show with generation UI integrated */}
+        <QBRDashboard 
+          partner={partner} 
+          metrics={metrics} 
+          allPartnerMetrics={allPartnerMetrics}
+          isGenerating={isGenerating}
+          qbrContent={qbrContent}
+          onGenerateQBR={generateQBR}
+        />
       </div>
     </div>
   )

@@ -14,16 +14,19 @@ import {
 import {
   TrendingUp, DollarSign, Target, Users, Award,
   BarChart3, Activity, AlertCircle, CheckCircle, 
-  Brain, Loader2
+  Brain, Loader2, Sparkles
 } from 'lucide-react'
 
 interface QBRDashboardProps {
   partner: Partner
   metrics: PartnerMetrics
   allPartnerMetrics?: PartnerMetrics[]
+  isGenerating?: boolean
+  qbrContent?: string
+  onGenerateQBR?: () => void
 }
 
-export const QBRDashboard = ({ partner, metrics, allPartnerMetrics }: QBRDashboardProps) => {
+export const QBRDashboard = ({ partner, metrics, allPartnerMetrics, isGenerating, qbrContent, onGenerateQBR }: QBRDashboardProps) => {
   const [selectedPeriod, setSelectedPeriod] = useState('quarter')
   const [aiInsights, setAiInsights] = useState<string>('')
   const [isLoadingInsights, setIsLoadingInsights] = useState(false)
@@ -155,6 +158,38 @@ export const QBRDashboard = ({ partner, metrics, allPartnerMetrics }: QBRDashboa
           </div>
         </CardContent>
       </Card>
+
+      {/* QBR Generation UI */}
+      {onGenerateQBR && !qbrContent && (
+        <Card className="mb-8">
+          <CardContent className="p-8">
+            <div className="text-center py-8">
+              <Sparkles className="w-16 h-16 text-blue-600 mx-auto mb-4" />
+              <h3 className="text-xl font-semibold mb-2">Ready to Generate QBR</h3>
+              <p className="text-slate-600 mb-6">
+                Our AI will analyze all partner data and create a comprehensive QBR in seconds
+              </p>
+              <button
+                onClick={onGenerateQBR}
+                disabled={isGenerating}
+                className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-3 rounded-lg font-medium hover:shadow-lg transition-all flex items-center gap-2 mx-auto"
+              >
+                {isGenerating ? (
+                  <>
+                    <Loader2 className="w-5 h-5 animate-spin" />
+                    Generating QBR...
+                  </>
+                ) : (
+                  <>
+                    <Sparkles className="w-5 h-5" />
+                    Generate QBR Report
+                  </>
+                )}
+              </button>
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       {/* 
       COMMENTED OUT FOR EXECUTIVE TEMPLATE - CAN BE RESTORED LATER
@@ -350,8 +385,9 @@ export const QBRDashboard = ({ partner, metrics, allPartnerMetrics }: QBRDashboa
       END OF COMMENTED CHARTS SECTION 
       */}
 
-      {/* AI Insights Section */}
-      <Card className="border border-slate-200 bg-white shadow-sm">
+      {/* AI Insights Section - Only show when QBR is generated */}
+      {qbrContent && (
+        <Card className="border border-slate-200 bg-white shadow-sm">
         <CardHeader className="border-b border-slate-100 bg-slate-50/50">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
@@ -587,6 +623,7 @@ export const QBRDashboard = ({ partner, metrics, allPartnerMetrics }: QBRDashboa
             )}
           </CardContent>
         </Card>
+      )}
 
       {/* 
       REMOVED: Static Strategic Priorities and Next Actions sections
