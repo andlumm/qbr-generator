@@ -56,9 +56,47 @@ export const QBRDashboard = ({ partner, metrics, allPartnerMetrics, isGenerating
         setAiInsights(data.insights)
       } else {
         console.error('Failed to generate insights:', data.error)
+        console.error('Error details:', data.details)
+        console.error('Has API key:', data.hasApiKey)
+        console.error('API key length:', data.apiKeyLength)
+        
+        // Show error to user
+        setAiInsights(`## Error\n\nFailed to generate QBR insights.\n\n**Details:** ${data.details}\n\n**API Key Available:** ${data.hasApiKey ? 'Yes' : 'No'}\n\n**Debug Info:** This error typically occurs when the OpenRouter API key is not configured in Vercel environment variables.`)
       }
     } catch (error) {
       console.error('Error generating insights:', error)
+      
+      // Provide fallback content when API fails
+      setAiInsights(`## Error: API Connection Failed
+
+Failed to connect to OpenRouter API for QBR generation.
+
+**Most likely cause:** OpenRouter API key not configured in Vercel environment variables.
+
+**To fix this issue:**
+1. Go to Vercel Dashboard → Project Settings → Environment Variables
+2. Add: \`OPENROUTER_API_KEY\` = \`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\`
+3. Redeploy the application
+
+**For now, here's a basic analysis:**
+
+## Executive Summary
+${partner.name} (${partner.tier} Partner) shows ${metrics.revenue.growth > 0 ? 'positive' : 'declining'} growth trends with ${metrics.healthScore}/100 health score requiring strategic attention.
+
+## Key Insights
+| Category | Metric/Statement |
+|----------|------------------|
+| Revenue Performance | $${(metrics.revenue.current/1000).toFixed(0)}K ARR with ${metrics.revenue.growth.toFixed(1)}% QoQ growth |
+| Pipeline Health | ${metrics.pipeline.coverage}% coverage, ${metrics.pipeline.count} opportunities worth $${(metrics.pipeline.value/1000).toFixed(0)}K |
+| Partner Enablement | ${metrics.engagement.trainingCompletionRate}% training completion rate |
+| Customer Satisfaction | ${metrics.delivery.customerSatisfaction}/5 CSAT score |
+
+## Next Actions
+| Action | Owner | Due |
+|--------|-------|-----|
+| Configure OpenRouter API key in Vercel | Technical Team | This Week |
+| Schedule partner health review | ${partner.partnerManager} | Next Week |
+| Review enablement gaps | Partner Success | End of Month |`)
     } finally {
       setIsLoadingInsights(false)
     }
