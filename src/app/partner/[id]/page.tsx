@@ -88,6 +88,24 @@ export default function PartnerQBRPage() {
         This eliminates the duplicate header issue 
         */}
 
+        {/* Partner Name Header - First Thing Users See */}
+        <div className="text-center mb-6">
+          <h1 className="text-4xl font-bold text-slate-900 mb-2">{partner.name}</h1>
+          <div className="flex items-center justify-center gap-4">
+            <span className={`inline-flex px-3 py-1 text-sm font-medium rounded-full ${
+              partner.tier === 'Strategic' ? 'bg-purple-100 text-purple-700' :
+              partner.tier === 'Select' ? 'bg-blue-100 text-blue-700' :
+              'bg-gray-100 text-gray-700'
+            }`}>
+              {partner.tier} Partner
+            </span>
+            <span className="text-slate-600">•</span>
+            <span className="text-lg text-slate-700">{partner.region}</span>
+            <span className="text-slate-600">•</span>
+            <span className="text-lg font-medium text-slate-700">{metrics.quarter}</span>
+          </div>
+        </div>
+
         {/* Quick Stats */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
           <Card>
@@ -149,7 +167,7 @@ export default function PartnerQBRPage() {
           </Card>
         </div>
 
-        {/* QBR Dashboard - Always show with generation UI integrated */}
+        {/* QBR Dashboard - Simplified without duplicate header */}
         <QBRDashboard 
           partner={partner} 
           metrics={metrics} 
