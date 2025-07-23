@@ -3,7 +3,6 @@
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { generateDummyPartners, generateDummyMetrics } from '@/lib/dummy-data'
 import { 
   TrendingUp, TrendingDown, AlertCircle, CheckCircle, 
   BarChart3, Users, Target, Calendar, ArrowRight,
@@ -11,8 +10,30 @@ import {
 } from 'lucide-react'
 
 export default function HomePage() {
-  const [partners, setPartners] = useState(generateDummyPartners(8))
-  const [metrics, setMetrics] = useState(generateDummyMetrics(partners))
+  const [partners, setPartners] = useState<any[]>([])
+  const [metrics, setMetrics] = useState<any[]>([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    async function loadData() {
+      try {
+        const response = await fetch('/api/partners')
+        const result = await response.json()
+        
+        if (result.success) {
+          setPartners(result.data.partners)
+          setMetrics(result.data.metrics)
+        } else {
+          console.error('Failed to load partners:', result.error)
+        }
+      } catch (error) {
+        console.error('Error fetching partners:', error)
+      } finally {
+        setLoading(false)
+      }
+    }
+    loadData()
+  }, [])
 
   const getHealthColor = (score: number) => {
     if (score >= 85) return 'text-green-500'
@@ -29,7 +50,7 @@ export default function HomePage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 text-slate-900">
       {/* Hero Section */}
       <section className="relative overflow-hidden">
         <div className="absolute inset-0 bg-grid-slate-200 [mask-image:linear-gradient(0deg,white,rgba(255,255,255,0.6))] -z-10" />
@@ -88,7 +109,7 @@ export default function HomePage() {
                 <CardTitle className="text-lg font-medium">Total Partners</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-3xl font-bold">{partners.length}</div>
+                <div className="text-3xl font-bold">{loading ? '...' : partners.length}</div>
                 <div className="flex items-center gap-1 text-sm text-green-600 mt-1">
                   <TrendingUp className="w-4 h-4" />
                   <span>+12% QoQ</span>
@@ -102,9 +123,9 @@ export default function HomePage() {
               </CardHeader>
               <CardContent>
                 <div className="text-3xl font-bold">
-                  {Math.round(metrics.reduce((acc, m) => acc + m.pipeline.coverage, 0) / metrics.length)}%
+                  {loading ? '...' : Math.round(metrics.reduce((acc, m) => acc + m.pipeline.coverage, 0) / metrics.length)}%
                 </div>
-                <div className="text-sm text-slate-600 mt-1">Target: 100%</div>
+                <div className="text-sm text-slate-600 mt-1">Target: 150%</div>
               </CardContent>
             </Card>
 
@@ -114,7 +135,7 @@ export default function HomePage() {
               </CardHeader>
               <CardContent>
                 <div className="text-3xl font-bold">
-                  {Math.round(metrics.reduce((acc, m) => acc + m.dealRegistration.winRate, 0) / metrics.length)}%
+                  {loading ? '...' : Math.round(metrics.reduce((acc, m) => acc + m.dealRegistration.winRate, 0) / metrics.length)}%
                 </div>
                 <div className="flex items-center gap-1 text-sm text-green-600 mt-1">
                   <TrendingUp className="w-4 h-4" />
@@ -129,7 +150,7 @@ export default function HomePage() {
               </CardHeader>
               <CardContent>
                 <div className="text-3xl font-bold">
-                  {(metrics.reduce((acc, m) => acc + m.delivery.customerSatisfaction, 0) / metrics.length).toFixed(1)}
+                  {loading ? '...' : (metrics.reduce((acc, m) => acc + m.delivery.customerSatisfaction, 0) / metrics.length).toFixed(1)}
                 </div>
                 <div className="text-sm text-slate-600 mt-1">out of 5.0</div>
               </CardContent>
@@ -157,7 +178,13 @@ export default function HomePage() {
                     </tr>
                   </thead>
                   <tbody>
-                    {partners.map((partner, index) => {
+                    {loading ? (
+                      <tr>
+                        <td colSpan={7} className="py-8 text-center text-slate-600">
+                          Loading partner data...
+                        </td>
+                      </tr>
+                    ) : partners.map((partner, index) => {
                       const metric = metrics[index]
                       return (
                         <motion.tr 
@@ -208,7 +235,7 @@ export default function HomePage() {
                             </div>
                           </td>
                           <td className="py-3 px-4">
-                            <a href={`/partner/${index + 1}`} className="text-blue-600 hover:text-blue-800 font-medium text-sm">
+                            <a href={`/partner/${partner.id.replace('partner-', '')}`} className="text-blue-600 hover:text-blue-800 font-medium text-sm">
                               Generate QBR →
                             </a>
                           </td>

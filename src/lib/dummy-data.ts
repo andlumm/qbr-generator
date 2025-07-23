@@ -85,8 +85,13 @@ export const generateDummyMetrics = (partners: Partner[]): PartnerMetrics[] => {
     const baseRevenue = partner.tier === 'Strategic' ? 500000 : 
                        partner.tier === 'Select' ? 200000 : 50000
     
-    const current = baseRevenue + (seed * 0.1 % 1) * baseRevenue * 0.5
-    const previous = baseRevenue + (seed * 0.15 % 1) * baseRevenue * 0.3
+    // More realistic revenue with some variance but reasonable growth rates
+    const revenueVariance = 0.8 + (seed * 0.1 % 1) * 0.4 // 0.8 to 1.2 multiplier
+    const current = Math.round(baseRevenue * revenueVariance)
+    
+    // Growth rate between -25% and +30% (realistic range)
+    const growthRate = -0.25 + (seed * 0.15 % 1) * 0.55
+    const previous = Math.round(current / (1 + growthRate))
     const growth = ((current - previous) / previous) * 100
     const target = baseRevenue * 1.2
     const attainment = (current / target) * 100
@@ -95,7 +100,9 @@ export const generateDummyMetrics = (partners: Partner[]): PartnerMetrics[] => {
     const dealsApproved = Math.floor(dealsSubmitted * (0.6 + (seed * 0.25 % 1) * 0.3))
     const dealsWon = Math.floor(dealsApproved * (0.3 + (seed * 0.3 % 1) * 0.4))
     
-    const pipelineValue = Math.round(current * (2 + (seed * 0.35 % 1) * 2))
+    // Realistic pipeline coverage: 80-350% (most partners 120-250%)
+    const coverageMultiplier = 1.2 + (seed * 0.35 % 1) * 1.3 // 1.2 to 2.5
+    const pipelineValue = Math.round(target * coverageMultiplier)
     const pipelineCoverage = (pipelineValue / target) * 100
     
     return {
@@ -112,8 +119,8 @@ export const generateDummyMetrics = (partners: Partner[]): PartnerMetrics[] => {
       pipeline: {
         count: Math.floor((seed * 0.4 % 1) * 50) + 10,
         value: pipelineValue,
-        conversion: Math.round((20 + (seed * 0.45 % 1) * 40) * 10) / 10,
-        avgDealSize: Math.round(current / (10 + (seed * 0.5 % 1) * 10)),
+        conversion: Math.round((15 + (seed * 0.45 % 1) * 25) * 10) / 10, // 15-40% realistic range
+        avgDealSize: Math.round(pipelineValue / (Math.floor((seed * 0.4 % 1) * 50) + 10)), // Based on actual pipeline
         coverage: Math.round(pipelineCoverage * 10) / 10
       },
       dealRegistration: {

@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import { Partner, PartnerMetrics } from '@/lib/dummy-data'
+import { Partner } from '@/lib/db/schema'
 import { MetricCard } from './MetricCard'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import {
@@ -19,8 +19,8 @@ import {
 
 interface QBRDashboardProps {
   partner: Partner
-  metrics: PartnerMetrics
-  allPartnerMetrics?: PartnerMetrics[]
+  metrics: any // Using converted metrics format from PartnerService
+  allPartnerMetrics?: any[]
   allPartners?: Partner[]
   isGenerating?: boolean
   qbrContent?: string
